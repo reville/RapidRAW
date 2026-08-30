@@ -4,17 +4,18 @@ Patch order matters for the combined build. Update this file whenever a branch i
 
 | Order | Modification | Feature branch | Preserved commit | State | Upstream/PR status | Validation |
 | ---: | --- | --- | --- | --- | --- | --- |
-| 1 | macOS HEIC/HEIF import support | `codex/heic-import` | `82f690de` | keep | Verify live before changing | Previously committed and present in fork tracking refs |
-| 2 | Hide unavailable zero-byte placeholders | `codex/hide-unavailable-placeholders` | `44dd0479` | keep | Verify live before changing | Previously committed and present in fork tracking refs |
-| 3 | Cameras and Locations library views | `codex/cameras-locations` | `6874bfef` | committed | No PR recorded | Frontend production build passed 2026-08-30; full typecheck has pre-existing repository failures |
-| 4 | Editor toolbar in the custom titlebar | `codex/move-editor-buttons-top-bar` | `13fa0179` | committed WIP | No PR recorded | Frontend production build passed 2026-08-30; full typecheck has pre-existing repository failures |
+| 1 | macOS HEIC/HEIF import support | `codex/heic-import` | `82f690de` | keep | [Open PR #1643](https://github.com/CyberTimon/RapidRAW/pull/1643) | Committed and pushed |
+| 2 | Hide unavailable zero-byte placeholders | `codex/hide-unavailable-placeholders` | `44dd0479` | keep | [Open PR #1644](https://github.com/CyberTimon/RapidRAW/pull/1644) | Committed and pushed |
+| 3 | Cameras and Locations library views | `codex/cameras-locations` | `c2a43e96` | keep | [Open PR #1646](https://github.com/CyberTimon/RapidRAW/pull/1646) | Frontend production build passed 2026-08-30; full typecheck has pre-existing repository failures |
+| 4 | Editor toolbar in the custom titlebar | `codex/move-editor-buttons-top-bar` | `0c0ffbcc` | keep | [Open PR #1645](https://github.com/CyberTimon/RapidRAW/pull/1645) | Frontend production build passed 2026-08-30; full typecheck has pre-existing repository failures |
 
 ## Combined branch
 
 - Branch: `personal/current`
 - Base at setup: `origin/main` at `7ac8d50d`
-- Canonical feature commits, in order: `82f690de`, `44dd0479`, `6874bfef`, `13fa0179`
+- Canonical feature commits, in order: `82f690de`, `44dd0479`, `c2a43e96`, `0c0ffbcc`
 - Combined equivalents at setup: `67edf3ba`, `5595e84a`, `5097cb34`, `3d10e64c`
+- Final feature-delta commits in the combined branch: `1acdb669` and `b20d9fbe`
 - Purpose: Nicholas's installable custom build; never use it as the source branch for an upstream PR.
 - Combined validation: frontend production build and all four converted-input disclosure tests passed 2026-08-30.
 
@@ -37,7 +38,7 @@ The Cameras and titlebar commits in `personal/current` have the same stable patc
 - `backup/2026-08-30-cameras-locations-followup` at `a038873f` preserves the later uncommitted navigation follow-up without changing its active worktree.
 - `backup/2026-08-30-toolbar-followup` at `f1dd4750` preserves the later uncommitted toolbar-layout follow-up without changing its active worktree.
 
-The two follow-up snapshots are not yet included in `personal/current`; apply them only after their active feature work is finalized and validated.
+The follow-up snapshots were superseded by the finalized feature commits above. They remain only as recovery points; `personal/current` contains the final deltas.
 
 ## Safety rules
 
