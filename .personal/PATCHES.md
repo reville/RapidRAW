@@ -8,6 +8,7 @@ Patch order matters for the combined build. Update this file whenever a branch i
 | 2 | Hide unavailable zero-byte placeholders | `codex/hide-unavailable-placeholders` | `44dd0479` | keep | [Open PR #1644](https://github.com/CyberTimon/RapidRAW/pull/1644) | Committed and pushed |
 | 3 | Cameras and Locations library views | `codex/cameras-locations` | `c2a43e96` | keep | [Open PR #1646](https://github.com/CyberTimon/RapidRAW/pull/1646) | Frontend production build passed 2026-08-30; full typecheck has pre-existing repository failures |
 | 4 | Editor toolbar in the custom titlebar | `codex/move-editor-buttons-top-bar` | `0c0ffbcc` | keep | [Open PR #1645](https://github.com/CyberTimon/RapidRAW/pull/1645) | Frontend production build passed 2026-08-30; full typecheck has pre-existing repository failures |
+| 5 | Bounded decoded-image cache memory and Utility-QoS ingest | `codex/reduce-memory-pressure` | `fb72b868` | keep | [Open PR #1648](https://github.com/CyberTimon/RapidRAW/pull/1648) | 7 unit tests pass; cargo fmt/clippy clean; A/B footprint measured 2026-08-30; non-macOS QoS branch compile-checked |
 | 5 | Prioritize editor rendering over thumbnail refreshes | `codex/prioritize-editor-rendering` | `35151a72` | keep | [Open PR #1647](https://github.com/CyberTimon/RapidRAW/pull/1647) | 10 Rust tests, strict Clippy, and frontend production build passed 2026-08-30 |
 
 ## Combined branch
@@ -32,6 +33,7 @@ The Cameras and titlebar commits in `personal/current` have the same stable patc
 | `placeholders` | `features/hide-unavailable-placeholders` | Link to existing clean feature worktree |
 | `cameras` | `features/cameras-locations` | Link to existing dirty WIP worktree; snapshot preserved separately |
 | `toolbar` | `features/move-editor-buttons-top-bar` | Link to the finished feature worktree |
+| `memory` | `features/reduce-memory-pressure` | Clean worktree branched from `origin/main` at `7ac8d50d` |
 | `priority` | `/Users/nicholasreville/CODING/agent/rapidraw-editor-priority` | Clean feature worktree for PR #1647 |
 
 ## Safety snapshots
