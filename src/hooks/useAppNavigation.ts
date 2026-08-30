@@ -51,6 +51,7 @@ export function useAppNavigation({ clearThumbnailQueue, refs }: AppNavigationPro
       folderTrees: [],
       multiSelectedPaths: [],
       libraryActivePath: null,
+      libraryFacet: null,
       expandedFolders: new Set(),
     });
     useUIStore.getState().setUI({ isLibraryExportPanelVisible: false });
@@ -258,11 +259,13 @@ export function useAppNavigation({ clearThumbnailQueue, refs }: AppNavigationPro
     ) => {
       const { appSettings, handleSettingsChange } = useSettingsStore.getState();
       const { pinnedFolders } = appSettings || { pinnedFolders: [] };
-      const { setLibrary, sortCriteria } = useLibraryStore.getState();
+      const { setLibrary, setLibraryFacet, sortCriteria } = useLibraryStore.getState();
       const { setUI } = useUIStore.getState();
       const { setProcess } = useProcessStore.getState();
       const { selectedImage, resetHistory, setEditor } = useEditorStore.getState();
       const libraryViewMode = appSettings?.libraryViewMode;
+
+      setLibraryFacet(null);
 
       if (!preserveEditor) {
         await invoke('cancel_thumbnail_generation');
@@ -411,8 +414,10 @@ export function useAppNavigation({ clearThumbnailQueue, refs }: AppNavigationPro
 
   const handleSelectAlbum = useCallback(
     async (albumId: string, albumName: string, imagePaths: string[], preserveEditor = false) => {
-      const { setLibrary } = useLibraryStore.getState();
+      const { setLibrary, setLibraryFacet } = useLibraryStore.getState();
       const { setUI } = useUIStore.getState();
+
+      setLibraryFacet(null);
 
       if (!preserveEditor) {
         await invoke('cancel_thumbnail_generation');
