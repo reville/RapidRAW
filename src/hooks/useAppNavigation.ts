@@ -268,6 +268,7 @@ export function useAppNavigation({ clearThumbnailQueue, refs }: AppNavigationPro
       setLibraryFacet(null);
 
       if (!preserveEditor) {
+        await debouncedSave.flush();
         await invoke('cancel_thumbnail_generation');
         clearThumbnailQueue();
         setLibrary({ isViewLoading: true, activeAlbumId: null, libraryScrollTop: 0 });
@@ -315,7 +316,6 @@ export function useAppNavigation({ clearThumbnailQueue, refs }: AppNavigationPro
         });
 
         if (!preserveEditor && selectedImage) {
-          debouncedSave.flush();
           debouncedSetHistory.cancel();
           setEditor({ selectedImage: null, finalPreviewUrl: null, uncroppedAdjustedPreviewUrl: null, histogram: null });
           setEditor({ adjustments: INITIAL_ADJUSTMENTS });
@@ -422,6 +422,7 @@ export function useAppNavigation({ clearThumbnailQueue, refs }: AppNavigationPro
       setLibraryFacet(null);
 
       if (!preserveEditor) {
+        await debouncedSave.flush();
         await invoke('cancel_thumbnail_generation');
         clearThumbnailQueue();
         setLibrary({ libraryScrollTop: 0 });
