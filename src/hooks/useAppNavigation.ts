@@ -446,6 +446,36 @@ export function useAppNavigation({ clearThumbnailQueue, refs }: AppNavigationPro
           imageRatings: initialRatings,
           ...(preserveEditor ? {} : { multiSelectedPaths: [], libraryActivePath: null }),
         });
+
+        if (files.length > 0) {
+          const paths = files.map((file) => file.path);
+
+          setTimeout(() => {
+            const fetchExifInChunks = async () => {
+              const chunkSize = 50;
+              for (let i = 0; i < paths.length; i += chunkSize) {
+                if (useLibraryStore.getState().activeAlbumId !== albumId) break;
+
+                const chunk = paths.slice(i, i + chunkSize);
+                try {
+                  const chunkExif: Record<string, ImageFile['exif']> = await invoke(Invokes.ReadExifForPaths, {
+                    paths: chunk,
+                  });
+                  setLibrary((state) => ({
+                    imageList: state.imageList.map((image) => ({
+                      ...image,
+                      exif: chunkExif[image.path] || image.exif || null,
+                    })),
+                  }));
+                  await new Promise((resolve) => setTimeout(resolve, 50));
+                } catch (err) {
+                  console.error('Failed to read album EXIF chunk:', err);
+                }
+              }
+            };
+            fetchExifInChunks();
+          }, 500);
+        }
       } catch (err) {
         console.error('Failed to load album images:', err);
         toast.error(`Failed to load album: ${err}`);
