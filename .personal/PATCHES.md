@@ -9,18 +9,19 @@ Patch order matters for the combined build. Update this file whenever a branch i
 | 3 | Cameras and Locations library views | `codex/cameras-locations` | `c2a43e96` | keep | [Open PR #1646](https://github.com/CyberTimon/RapidRAW/pull/1646) | Frontend production build passed 2026-08-30; full typecheck has pre-existing repository failures |
 | 4 | Editor toolbar in the custom titlebar | `codex/move-editor-buttons-top-bar` | `0c0ffbcc` | keep | [Open PR #1645](https://github.com/CyberTimon/RapidRAW/pull/1645) | Frontend production build passed 2026-08-30; full typecheck has pre-existing repository failures |
 | 5 | Bounded decoded-image cache memory and Utility-QoS ingest | `codex/reduce-memory-pressure` | `fb72b868` | keep | [Open PR #1648](https://github.com/CyberTimon/RapidRAW/pull/1648) | 7 unit tests pass; cargo fmt/clippy clean; A/B footprint measured 2026-08-30; non-macOS QoS branch compile-checked |
-| 5 | Prioritize editor rendering over thumbnail refreshes | `codex/prioritize-editor-rendering` | `35151a72` | keep | [Open PR #1647](https://github.com/CyberTimon/RapidRAW/pull/1647) | 10 Rust tests, strict Clippy, and frontend production build passed 2026-08-30 |
+| 6 | Prioritize editor rendering over thumbnail refreshes | `codex/prioritize-editor-rendering` | `35151a72` | keep | [Open PR #1647](https://github.com/CyberTimon/RapidRAW/pull/1647) | 10 Rust tests, strict Clippy, and frontend production build passed 2026-08-30 |
+| 7 | Prewarm GPU pipelines and cancel stale previews | `codex/prewarm-cancel-preview-frames` | `4ce94095` | keep | [Open PR #1649](https://github.com/CyberTimon/RapidRAW/pull/1649) | 4 focused tests, cargo check, and strict Clippy passed; local Metal smoke measured 614.17 ms pipeline build vs 100.67 microseconds texture resize |
 
 ## Combined branch
 
 - Branch: `personal/current`
 - Base at setup: `origin/main` at `7ac8d50d`
-- Canonical feature commits, in order: `82f690de`, `44dd0479`, `c2a43e96`, `0c0ffbcc`, `35151a72`
-- Combined equivalents: `67edf3ba`, `5595e84a`, `5097cb34`, `3d10e64c`, `9c7b47e4`
+- Canonical feature commits, in order: `82f690de`, `44dd0479`, `c2a43e96`, `0c0ffbcc`, `35151a72`, `fb72b868`, `4ce94095`
+- Combined equivalents: `67edf3ba`, `5595e84a`, `5097cb34`, `3d10e64c`, `9c7b47e4`, `91ba8ec0`, `4f17e55b`
 - Final feature-delta commits in the combined branch: `1acdb669` and `b20d9fbe`
 - Combined-stack compatibility fix: `bb91f7e7` (unique Rust test-module names)
 - Purpose: Nicholas's installable custom build; never use it as the source branch for an upstream PR.
-- Combined validation: frontend production build and the full 22-test Rust suite passed 2026-08-30.
+- Combined validation: `cargo check` and the full 26-test Rust suite passed 2026-08-30; strict Clippy still reports two pre-existing `exif_processing.rs` warnings from the memory patch.
 
 The Cameras and titlebar commits in `personal/current` have the same stable patch IDs as their canonical feature commits; they were assembled from non-disruptive safety snapshots while the original worktrees were active.
 
@@ -35,6 +36,7 @@ The Cameras and titlebar commits in `personal/current` have the same stable patc
 | `toolbar` | `features/move-editor-buttons-top-bar` | Link to the finished feature worktree |
 | `memory` | `features/reduce-memory-pressure` | Clean worktree branched from `origin/main` at `7ac8d50d` |
 | `priority` | `/Users/nicholasreville/CODING/agent/rapidraw-editor-priority` | Clean feature worktree for PR #1647 |
+| `prewarm` | `/Users/nicholasreville/CODING/agent/rapidraw-preview-prewarm` | Clean feature worktree for PR #1649 |
 
 ## Safety snapshots
 
