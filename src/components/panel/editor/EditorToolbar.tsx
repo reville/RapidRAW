@@ -419,6 +419,8 @@ const EditorToolbar = memo(
 
     const isInTitlebar = titlebarTarget !== null;
     const effectiveTitlebarLayout = titlebarLayout ?? (titlebarTarget ? measureTitlebarLayout(titlebarTarget) : null);
+    const toolbarButtonPadding = isInTitlebar ? 'p-[7.76px]' : 'p-2';
+    const toolbarIconSize = isInTitlebar ? 19.4 : 20;
     const toolbar = (
       <div
         className={clsx(
@@ -431,13 +433,16 @@ const EditorToolbar = memo(
       >
         <div className="flex items-center gap-2 shrink-0 z-40">
           <button
-            className="bg-surface text-text-primary p-2 rounded-full hover:bg-card-active transition-colors shrink-0"
+            className={clsx(
+              'bg-surface text-text-primary rounded-full hover:bg-card-active transition-colors shrink-0',
+              toolbarButtonPadding,
+            )}
             onClick={onBackToLibrary}
             onKeyDown={handleButtonKeyDown}
             data-tooltip={t('editor.toolbar.tooltips.backToLibrary')}
             data-bench-id="back-to-library"
           >
-            <ArrowLeft size={20} />
+            <ArrowLeft size={toolbarIconSize} />
           </button>
 
           {!isInTitlebar && (
@@ -655,7 +660,10 @@ const EditorToolbar = memo(
         <div className="flex items-center gap-2 shrink-0 z-40">
           <div className="relative flex items-center gap-2" ref={historyButtonRef}>
             <button
-              className="bg-surface text-text-primary p-2 rounded-full hover:bg-card-active transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className={clsx(
+                'bg-surface text-text-primary rounded-full hover:bg-card-active transition-colors disabled:opacity-50 disabled:cursor-not-allowed',
+                toolbarButtonPadding,
+              )}
               disabled={!canUndo}
               onClick={onUndo}
               onKeyDown={handleButtonKeyDown}
@@ -666,10 +674,13 @@ const EditorToolbar = memo(
               data-tooltip={t('editor.toolbar.tooltips.undo')}
               data-bench-id="undo"
             >
-              <Undo size={20} />
+              <Undo size={toolbarIconSize} />
             </button>
             <button
-              className="bg-surface text-text-primary p-2 rounded-full hover:bg-card-active transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className={clsx(
+                'bg-surface text-text-primary rounded-full hover:bg-card-active transition-colors disabled:opacity-50 disabled:cursor-not-allowed',
+                toolbarButtonPadding,
+              )}
               disabled={!canRedo}
               onClick={onRedo}
               onKeyDown={handleButtonKeyDown}
@@ -679,7 +690,7 @@ const EditorToolbar = memo(
               }}
               data-tooltip={t('editor.toolbar.tooltips.redo')}
             >
-              <Redo size={20} />
+              <Redo size={toolbarIconSize} />
             </button>
 
             <AnimatePresence>
@@ -742,7 +753,8 @@ const EditorToolbar = memo(
 
           <button
             className={clsx(
-              'p-2 rounded-full transition-colors',
+              'rounded-full transition-colors',
+              toolbarButtonPadding,
               showOriginal
                 ? 'bg-accent text-button-text hover:bg-accent/90 hover:text-button-text'
                 : 'bg-surface hover:bg-card-active text-text-primary',
@@ -753,16 +765,21 @@ const EditorToolbar = memo(
               showOriginal ? t('editor.toolbar.tooltips.showEdited') : t('editor.toolbar.tooltips.showOriginal')
             }
           >
-            {showOriginal ? <EyeOff size={20} /> : <Eye size={20} />}
+            {showOriginal ? <EyeOff size={toolbarIconSize} /> : <Eye size={toolbarIconSize} />}
           </button>
           <button
-            className="bg-surface text-text-primary p-2 rounded-full hover:bg-card-active transition-colors disabled:opacity-50 disabled:cursor-not-allowed relative"
+            className={clsx(
+              'bg-surface text-text-primary rounded-full hover:bg-card-active transition-colors disabled:opacity-50 disabled:cursor-not-allowed relative',
+              toolbarButtonPadding,
+            )}
             onClick={onToggleFullScreen}
             onKeyDown={handleButtonKeyDown}
             data-tooltip={t('editor.toolbar.tooltips.fullscreen')}
           >
-            <div className="relative w-5 h-5 flex items-center justify-center">
-              <Maximize size={20} />
+            <div
+              className={clsx('relative flex items-center justify-center', isInTitlebar ? 'size-[19.4px]' : 'w-5 h-5')}
+            >
+              <Maximize size={toolbarIconSize} />
             </div>
           </button>
         </div>
