@@ -1,4 +1,5 @@
 import { memo, useState, useEffect, useRef, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { Eye, EyeOff, ArrowLeft, Maximize, Loader2, Undo, Redo } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import clsx from 'clsx';
@@ -30,6 +31,18 @@ interface EditorToolbarProps {
   adjustmentsHistoryIndex: number;
   goToAdjustmentsHistoryIndex(index: number): void;
 }
+
+const measureTitlebarLayout = (titlebarTarget: HTMLElement) => {
+  const anchor = document.getElementById('rapidraw-editor-toolbar-anchor');
+  if (!anchor) return null;
+
+  const slotRect = titlebarTarget.getBoundingClientRect();
+  const anchorRect = anchor.getBoundingClientRect();
+  return {
+    left: anchorRect.left - slotRect.left,
+    width: anchorRect.width,
+  };
+};
 
 const EditorToolbar = memo(
   ({
@@ -63,12 +76,60 @@ const EditorToolbar = memo(
     const [isHistoryVisible, setIsHistoryVisible] = useState(false);
     const historyContainerRef = useRef<HTMLDivElement>(null);
     const historyButtonRef = useRef<HTMLDivElement>(null);
+    const [titlebarTarget, setTitlebarTarget] = useState<HTMLElement | null>(null);
+    const [titlebarLayout, setTitlebarLayout] = useState<{ left: number; width: number } | null>(null);
 
     const showResolution = !isAndroid && selectedImage.width > 0 && selectedImage.height > 0;
     const [displayedResolution, setDisplayedResolution] = useState('');
 
     const imageList = useLibraryStore((s) => s.imageList);
     const groupingMode: GroupingMode = useSettingsStore((s) => s.appSettings?.grouping) ?? 'off';
+    const useNativeTitlebar = useSettingsStore((s) => s.appSettings?.decorations ?? false);
+
+    useEffect(() => {
+      if (isAndroid || useNativeTitlebar) {
+        setTitlebarTarget(null);
+        return;
+      }
+
+      const syncTitlebarTarget = () => {
+        setTitlebarTarget(document.getElementById('rapidraw-titlebar-editor-slot'));
+      };
+
+      syncTitlebarTarget();
+      window.addEventListener('rapidraw-titlebar-slot-ready', syncTitlebarTarget);
+      return () => window.removeEventListener('rapidraw-titlebar-slot-ready', syncTitlebarTarget);
+    }, [isAndroid, useNativeTitlebar]);
+
+    useEffect(() => {
+      if (!titlebarTarget) {
+        setTitlebarLayout(null);
+        return;
+      }
+
+      const anchor = document.getElementById('rapidraw-editor-toolbar-anchor');
+      if (!anchor) return;
+
+      let animationFrame = 0;
+      const updateLayout = () => {
+        cancelAnimationFrame(animationFrame);
+        animationFrame = requestAnimationFrame(() => {
+          setTitlebarLayout(measureTitlebarLayout(titlebarTarget));
+        });
+      };
+
+      updateLayout();
+      const resizeObserver = new ResizeObserver(updateLayout);
+      resizeObserver.observe(anchor);
+      resizeObserver.observe(titlebarTarget);
+      window.addEventListener('resize', updateLayout);
+
+      return () => {
+        cancelAnimationFrame(animationFrame);
+        resizeObserver.disconnect();
+        window.removeEventListener('resize', updateLayout);
+      };
+    }, [titlebarTarget]);
 
     const variantOptions = useMemo(() => {
       if (groupingMode === 'off' || !onImageSelect) return [];
@@ -356,8 +417,18 @@ const EditorToolbar = memo(
 
     const isExpanded = isInfoHovered && (hasExif || isLoading);
 
-    return (
-      <div className="relative shrink-0 flex items-center justify-between px-3 h-12 gap-3 z-40">
+    const isInTitlebar = titlebarTarget !== null;
+    const effectiveTitlebarLayout = titlebarLayout ?? (titlebarTarget ? measureTitlebarLayout(titlebarTarget) : null);
+    const toolbar = (
+      <div
+        className={clsx(
+          'shrink-0 flex items-center justify-between z-40',
+          isInTitlebar
+            ? clsx('absolute top-0 h-10 px-2 gap-2', !effectiveTitlebarLayout && 'invisible')
+            : 'relative px-3 h-12 gap-3',
+        )}
+        style={isInTitlebar && effectiveTitlebarLayout ? effectiveTitlebarLayout : undefined}
+      >
         <div className="flex items-center gap-2 shrink-0 z-40">
           <button
             className="bg-surface text-text-primary p-2 rounded-full hover:bg-card-active transition-colors shrink-0"
@@ -369,20 +440,22 @@ const EditorToolbar = memo(
             <ArrowLeft size={20} />
           </button>
 
-          <div className="hidden 2xl:flex items-center gap-2" aria-hidden="true">
-            <div className="p-2 invisible pointer-events-none">
-              <Undo size={20} />
+          {!isInTitlebar && (
+            <div className="hidden 2xl:flex items-center gap-2" aria-hidden="true">
+              <div className="p-2 invisible pointer-events-none">
+                <Undo size={20} />
+              </div>
+              <div className="p-2 invisible pointer-events-none">
+                <Undo size={20} />
+              </div>
+              <div className="p-2 invisible pointer-events-none">
+                <Undo size={20} />
+              </div>
+              <div className="p-2 invisible pointer-events-none">
+                <Undo size={20} />
+              </div>
             </div>
-            <div className="p-2 invisible pointer-events-none">
-              <Undo size={20} />
-            </div>
-            <div className="p-2 invisible pointer-events-none">
-              <Undo size={20} />
-            </div>
-            <div className="p-2 invisible pointer-events-none">
-              <Undo size={20} />
-            </div>
-          </div>
+          )}
         </div>
 
         <div className="flex-1 flex justify-center min-w-0 relative h-full">
@@ -396,7 +469,7 @@ const EditorToolbar = memo(
             onMouseEnter={() => setIsInfoHovered(true)}
             onMouseLeave={() => setIsInfoHovered(false)}
             style={{
-              top: '6px',
+              top: isInTitlebar ? '2px' : '6px',
               transform: 'translateX(-50%)',
               left: '50%',
               zIndex: isExpanded ? 50 : 0,
@@ -695,6 +768,8 @@ const EditorToolbar = memo(
         </div>
       </div>
     );
+
+    return titlebarTarget ? createPortal(toolbar, titlebarTarget) : toolbar;
   },
 );
 
