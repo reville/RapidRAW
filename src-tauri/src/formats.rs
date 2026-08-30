@@ -188,7 +188,7 @@ pub fn is_nonempty_supported_image_file<P: AsRef<Path>>(path: P) -> bool {
 }
 
 #[cfg(test)]
-mod tests {
+mod nonempty_file_tests {
     use super::{is_nonempty_supported_image_file, is_supported_image_file};
 
     #[test]
