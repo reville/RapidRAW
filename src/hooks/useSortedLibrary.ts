@@ -47,9 +47,12 @@ function computeGroupedLibrary(libraryState: any, settingsState: any): GroupedLi
 
   const groupingMode: GroupingMode = appSettings?.grouping ?? 'off';
   const isGroupingActive = groupingMode !== 'off';
+  let facetMatchingGroupIds: Set<string> | null = null;
 
   const matchesFilter = (image: ImageFile): boolean => {
-    if (!matchesLibraryFacet(image, libraryFacet)) return false;
+    const matchesFacetGroup =
+      facetMatchingGroupIds !== null && image.group_id && facetMatchingGroupIds.has(image.group_id);
+    if (!matchesFacetGroup && !matchesLibraryFacet(image, libraryFacet)) return false;
 
     if (filterCriteria.rating !== 0) {
       const rating = imageRatings[image.path] || 0;
@@ -186,6 +189,16 @@ function computeGroupedLibrary(libraryState: any, settingsState: any): GroupedLi
         if (!image.group_id) continue;
         if (matchesSearch(image)) {
           searchMatchingGroupIds.add(image.group_id);
+        }
+      }
+    }
+
+    if (libraryFacet) {
+      facetMatchingGroupIds = new Set<string>();
+      for (const image of imageList) {
+        if (!image.group_id) continue;
+        if (matchesLibraryFacet(image, libraryFacet)) {
+          facetMatchingGroupIds.add(image.group_id);
         }
       }
     }
